@@ -4,6 +4,8 @@ import requests
 
 
 presidents = "ford carter reagen bush clinton obama"
+
+#*****NOTE: FORD DOESN'T WORK
 year = [["FORD","1976","1977"],["CARTER","1977","1981"],["REAGEN","1981","1989"],["BUSH1","1989","1993"],["CLINTON","1993","2001"],["BUSH2","2001","2009"]]
 quit = False
 out_thing = []
@@ -17,40 +19,36 @@ for num in range(6):
         out_thing.append(temp[0])
         out_thing.append(temp[1])
         out_thing.append(temp[2])
-print(out_thing)
-
+# print(out_thing)
+startyear = out_thing[1]
 endyear= out_thing[2]
-url = "https://api.census.gov/data/timeseries/bds/firms?get=estabs_entry_rate,estabs_exit_rate,estabs_entry,net_job_creation,ifsize&for=us:*&year2="+ endyear + "&key=b2fe9fbe9c805f2fb54e8c0398c97450a3132cde"
-
-page = requests.get(url)
-tree = html.fromstring(page.content)
-
-api_data = tostring(tree).decode("utf-8")
-
-api_data = api_data[4:-5]
-
-api_data = api_data.split(",\n")
+jobsum=0
+for year in range(int(startyear),int(endyear)):
+    url = "https://api.census.gov/data/timeseries/bds/firms?get=estabs_entry_rate,estabs_exit_rate,estabs_entry,net_job_creation,ifsize&for=us:*&year2="+ str(year) + "&key=b2fe9fbe9c805f2fb54e8c0398c97450a3132cde"
+    page = requests.get(url)
+    result = page.json()
+    for x in range(1,len(result)):
+        jobsum+= int(result[x][3])
 
 
+print("The net sum of job creation in " + str(name.capitalize()) + "'s complete administration is " + str(jobsum))
+print("This indicates that per year an average of number of " + str(int((int(jobsum)/(int(endyear)-int(startyear))))) + " jobs were created")
 
-for i in range(len(api_data)):
-    api_data[i] = api_data[i][1:-1]
-    api_data[i] = api_data[i].split(", ")
-    for j in range(len(api_data[i])):
-        api_data[i][j] = api_data[i][j].replace('"', '').split(",")
-
-sum=0
-
-for x in range(1,14):
-    sum+= int(api_data[x][0][3])
+net_poverty = 0
+url_poverty_endyear = 'https://api.census.gov/data/timeseries/poverty/histpov2?get=PCTPOV&for=us:*&time=' + str(endyear) + '&RACE=1' + "&key=b2fe9fbe9c805f2fb54e8c0398c97450a3132cde"
+url_poverty_startyear = 'https://api.census.gov/data/timeseries/poverty/histpov2?get=PCTPOV&for=us:*&time=' + str(startyear) + '&RACE=1' + "&key=b2fe9fbe9c805f2fb54e8c0398c97450a3132cde"
 
 
-print("The net sum of job creation in " + str(name) + "'s last term is " + str(sum))
-
-
-
-
-
-
+page = requests.get(url_poverty_endyear)
+api_data_poverty_endyear = page.json()
+page = requests.get(url_poverty_startyear)
+api_data_poverty_startyear = page.json()
+net_poverty = float(api_data_poverty_endyear[1][0]) - float(api_data_poverty_startyear[1][0])
+increase_or_decrease = ""
+if net_poverty < 0:
+    increase_or_decrease = "decrease"
+else:
+    increase_or_decrease = "increase"
+print("When " + name.upper() + " was president, the country experienced a ", abs(round(net_poverty, 1)), "% " + increase_or_decrease +" in poverty rate")
 
 
