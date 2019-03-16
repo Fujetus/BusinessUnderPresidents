@@ -3,10 +3,10 @@ from lxml.etree import tostring
 import requests
 
 
-presidents = "ford carter reagen bush clinton obama"
+presidents = "ford carter reagan bush clinton obama"
 
 #*****NOTE: FORD DOESN'T WORK
-year = [["FORD","1976","1977"],["CARTER","1977","1981"],["REAGEN","1981","1989"],["BUSH1","1989","1993"],["CLINTON","1993","2001"],["BUSH2","2001","2009"]]
+year = [["FORD","1976","1977"],["CARTER","1977","1981"],["REAGAN","1981","1989"],["BUSH1","1989","1993"],["CLINTON","1993","2001"],["BUSH2","2001","2009"]]
 quit = False
 out_thing = []
 name = input("Enter the last name of a president from 1974 to 2014")
